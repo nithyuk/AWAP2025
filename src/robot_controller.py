@@ -447,11 +447,11 @@ class RobotController:
 
         # are ids valid?
         if attacking_unit_id not in self.__game_state.units[self.__team]:
-            print("can_unit_attack_unit(): invalid attacking_unit_id")
+            # print("can_unit_attack_unit(): invalid attacking_unit_id")
             return False
         
         if target_unit_id not in self.__game_state.units[self.get_enemy_team()]:
-            print("can_unit_attack_unit(): invalid target_unit_id")
+            # print("can_unit_attack_unit(): invalid target_unit_id")
             return False
 
 
@@ -460,11 +460,11 @@ class RobotController:
 
         # basic validity
         if attacking_unit is None:
-            print('can_unit_attack_unit(): invalid attacking unit id')
+            # print('can_unit_attack_unit(): invalid attacking unit id')
             return False
         
         if target_unit is None:
-            print('can_unit_attack_unit(): invalid target unit id')
+            # print('can_unit_attack_unit(): invalid target unit id')
             return False
 
 
@@ -711,7 +711,7 @@ class RobotController:
 
             # basic validity
             if enemy_unit is None:
-                print('unit_attack_location(): invalid enemy unit id')
+                # print('unit_attack_location(): invalid enemy unit id')
                 return False
 
             if self.__game_state.damage_unit(attacking_unit_id, enemy_unit.defense):
