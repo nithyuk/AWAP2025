@@ -1,0 +1,1 @@
+python3 run_game.py -b bots/attack_bot_v1.py -r bots/builder_bot.py -m maps/simple_map.awap25m --render
