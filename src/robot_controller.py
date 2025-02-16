@@ -915,7 +915,6 @@ class RobotController:
         
         # is id valid?
         if unit_id not in self.__game_state.units[self.__team]:
-            print("can_move_unit_in_direction(): invalid ally unit_id")
             return False
 
 
@@ -1150,7 +1149,6 @@ class RobotController:
 
         # basic validity
         if engineer is None:
-            print('can_build_bridge(): invalid attacking unit id')
             return False
         
         if engineer.type != UnitType.ENGINEER:

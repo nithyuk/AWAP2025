@@ -46,6 +46,7 @@ class BotPlayer(Player):
     
     def updateFarms(self, rc: RobotController):
         team = rc.get_ally_team()
+        removal = []
 
         for (x, y) in self.rushFarms:
             found = False
@@ -53,7 +54,10 @@ class BotPlayer(Player):
                 if building.x == x and building.y == y:
                     found = True
             if not found:
-                self.rushFarms.remove((x, y))
+                removal.append((x, y))
+
+        for (x, y) in removal:
+            self.rushFarms.remove((x, y))
 
         if len(self.rushFarms) != NUM_FARMS_FOR_RUSH:
             self.rushStart = False
@@ -135,6 +139,16 @@ class BotPlayer(Player):
         for building in buildings:
             if building.type == BuildingType.MAIN_CASTLE:
                 return building
+            
+    def enemyOnLocation(self, x, y, rc: RobotController):
+        enemy = rc.get_enemy_team()
+
+        for enemy_id in rc.get_unit_ids(rc.get_enemy_team()):
+            enemy = rc.get_unit_from_id(enemy_id)
+            if enemy.x == x and enemy.y == y:
+                return True
+        
+        return False
 
     def accumTurn(self, rc: RobotController):
         team = rc.get_ally_team()
@@ -162,7 +176,7 @@ class BotPlayer(Player):
                     y = enemy_castle.y + (i - j)
 
                     if self.safe2DListAccess(y, x, self.occupied) != 1 and (type(self.safe2DListAccess(y, x, self.occupied)) != bool):
-                        if rc.can_build_building(BuildingType.FARM_1, x, y):
+                        if rc.can_build_building(BuildingType.FARM_1, x, y) and not self.enemyOnLocation(x, y, rc):
                             rc.build_building(BuildingType.FARM_1, x, y)
                             self.rushFarms.add((x, y))
                             built += 1
@@ -171,7 +185,7 @@ class BotPlayer(Player):
                     y =  enemy_castle.y - (i - j)
 
                     if self.safe2DListAccess(y, x, self.occupied) != 1 and (type(self.safe2DListAccess(y, x, self.occupied)) != bool):
-                        if rc.can_build_building(BuildingType.FARM_1, x, y):
+                        if rc.can_build_building(BuildingType.FARM_1, x, y) and not self.enemyOnLocation(x, y, rc):
                             rc.build_building(BuildingType.FARM_1, x, y)
                             self.rushFarms.add((x, y))
                             built += 1
@@ -180,7 +194,7 @@ class BotPlayer(Player):
                     x = enemy_castle.x - j
                     y = enemy_castle.y + (i - j)
                     if self.safe2DListAccess(y, x, self.occupied) != 1 and (type(self.safe2DListAccess(y, x, self.occupied)) != bool):
-                        if rc.can_build_building(BuildingType.FARM_1, x, y):
+                        if rc.can_build_building(BuildingType.FARM_1, x, y) and not self.enemyOnLocation(x, y, rc):
                             rc.build_building(BuildingType.FARM_1, x, y)
                             self.rushFarms.add((x, y))
                             built += 1
@@ -188,7 +202,7 @@ class BotPlayer(Player):
                     x = enemy_castle.x - j
                     y =  enemy_castle.y - (i - j)
                     if self.safe2DListAccess(y, x, self.occupied) != 1 and (type(self.safe2DListAccess(y, x, self.occupied)) != bool):
-                        if rc.can_build_building(BuildingType.FARM_1, x, y):
+                        if rc.can_build_building(BuildingType.FARM_1, x, y) and not self.enemyOnLocation(x, y, rc):
                             rc.build_building(BuildingType.FARM_1, x, y)
                             self.rushFarms.add((x, y))
                             built += 1
@@ -209,7 +223,7 @@ class BotPlayer(Player):
             return
 
         if len(self.shouldOccupy) > 0:
-            excess =  self.totalOccupied - len(rc.get_unit_ids(team))
+            excess =  (self.totalOccupied + 1) - len(rc.get_unit_ids(team))
             if excess > 0:                
                 for building in ally_buildings:
                     building_id = rc.get_id_from_building(building)[1]
