@@ -6,8 +6,8 @@ from src.game_constants import Team, Tile, GameConstants, Direction, BuildingTyp
 from src.units import Unit
 from src.buildings import Building
 
-NUM_FARMS_FOR_ACCUM = 5
-NUM_FARMS_FOR_RUSH = 3
+NUM_FARMS_FOR_ACCUM = 3
+NUM_FARMS_FOR_RUSH = 2
 
 
 class BotPlayer(Player):
@@ -44,6 +44,20 @@ class BotPlayer(Player):
                 return True
         return False
     
+    def updateFarms(self, rc: RobotController):
+        team = rc.get_ally_team()
+
+        for (x, y) in self.rushFarms:
+            found = False
+            for building in rc.get_buildings(team):
+                if building.x == x and building.y == y:
+                    found = True
+            if not found:
+                self.rushFarms.remove((x, y))
+
+        if len(self.rushFarms) != NUM_FARMS_FOR_RUSH:
+            self.rushStart = False
+
     def updateOccupied(self, rc: RobotController):
         self.occupied = [[0 for _ in range(self.map.width)] for _ in range(self.map.height)]
 
@@ -105,6 +119,8 @@ class BotPlayer(Player):
     def getMode(self, rc):
         self.updateTypeCounts(rc)
         self.updateOccupied(rc)
+        self.updateFarms(rc)
+
         if self.countFarms() < NUM_FARMS_FOR_ACCUM:
             self.mode = "FARM"
         elif self.rushStart:
@@ -133,7 +149,7 @@ class BotPlayer(Player):
 
             enemy_castle = rc.get_building_from_id(enemy_castle_id)
 
-            built = 0
+            built = len(self.rushFarms)
             i = 0
             while built < NUM_FARMS_FOR_RUSH:
                 
